@@ -1,0 +1,19 @@
+dist: xenial
+OS:
+    -linux
+compiler:
+    -gcc
+install
+    -source script.sh
+script:
+    -gcc redmine.c
+    -make
+deploy:
+    provider: releases
+    api-key:
+        secure:
+    file:
+        -redmine.c
+        -a.out
+    on:
+    tags:true
