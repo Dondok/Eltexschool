@@ -13,42 +13,13 @@
 #include <sys/types.h>
 #include <dirent.h>
 
+#include "for_fm.h"
 
 void sig_winch(int signo)
 {
 	struct winsize size;
 	ioctl(fileno(stdout), TIOCGWINSZ, (char *) &size);
 	resizeterm(size.ws_row, size.ws_col);
-}	
-
-void list_dir(struct dirent **namelist, int ln, int y, WINDOW *win)
-{
-	for (int i = 0 ;i < ln; i++){
-		if (i == y){
-			waddch (win,'>');
-		} else {      
-			waddch (win,' ');
-        }
-             
-		if (namelist[i] -> d_type == DT_DIR) {
-			if (i == y) {
-				wattron (win,A_BOLD);
-				wprintw (win," DIR: %s\n", namelist[i] -> d_name);
-				wattroff (win,A_BOLD);
-			} else {
-				wprintw (win," DIR: %s\n", namelist[i] -> d_name);
-			}
-		} else {
-			if (i == y) {
-				wattron (win,A_BOLD);
-				wprintw (win," file: %s\n", namelist[i] -> d_name);
-				wattroff (win,A_BOLD);
-			} else {
-				wprintw (win," file: %s\n", namelist[i] -> d_name);
-			}
-				wrefresh (win);
-		}
-	}
 }
 int main()
 {
@@ -60,6 +31,8 @@ int main()
 	
 	//будет хранить количесто файлов + папок возвращаемых от scandir
 	int ln, rn;
+	//вспомогательная для ln и rn
+	int k;
 	
 	int y = 0; //для бегунка 
 	int cycle = 0; //для while
@@ -95,13 +68,16 @@ int main()
  */
 	win = left;
     while (cycle == 0)
-    {
+    { 	
 		ln = scandir(ldir, &lnamelist, NULL, alphasort);
 		rn = scandir(rdir, &rnamelist, NULL, alphasort);
 		wclear(win);
+		
+		
 		if (win == left) {
 			list_dir(lnamelist, ln, y, win);
-		} else {
+		}
+		if (win == right) {
 			list_dir(rnamelist, rn, y, win);
 		}
 		        
@@ -114,7 +90,12 @@ int main()
 				
 			case 's':
 			case KEY_DOWN:
-				if (y < ln) y++;
+				if (win == left){
+					if (y < ln) y++;
+				}
+				if (win == right){
+					if (y < rn) y++;
+				}
 				break;
 					
 			case 'e':
@@ -123,12 +104,14 @@ int main()
 					strcpy(rdir,rnamelist[y] -> d_name);
 					chdir(rdir);
 					getcwd(rdir,255);
+				y = 0;
 				} else {
 					strcpy(ldir,lnamelist[y] -> d_name);
 					chdir(ldir);
 					getcwd(ldir,255);
-				}
 				y = 0;
+				}
+				
 				break;
 				 
 			case 'l':
