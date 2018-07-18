@@ -15,12 +15,6 @@
 
 #include "for_fm.h"
 
-void sig_winch(int signo)
-{
-	struct winsize size;
-	ioctl(fileno(stdout), TIOCGWINSZ, (char *) &size);
-	resizeterm(size.ws_row, size.ws_col);
-}
 int main()
 {
 	/*правое и левое окно, win - вспомогательное окно, будет хранить
@@ -47,7 +41,8 @@ int main()
 	keypad(stdscr, TRUE);
 	noecho();
 	initscr();
-	signal(SIGWINCH, sig_winch);
+	
+	//signal(SIGWINCH, sig_winch);
 	cbreak();
 	curs_set(FALSE);
 	refresh();
