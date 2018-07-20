@@ -1,9 +1,9 @@
 /*	Задание:	
- * 						PID, PPID
- * 					/	        	\
- * 		  PID, PPID					PID, PPID
+ *						PID, PPID
+ * 					/				\
+ *			PID, PPID				PID, PPID
  * 		/			\					|		
- * PID, PPID		PID, PPID		PID, PPID		
+ * PID, PPID	PID, PPID			PID, PPID		
  * 
  * 
  */
