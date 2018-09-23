@@ -15,6 +15,8 @@
 
 #include "for_fm.h"
 
+	
+
 int main()
 {
 	/*правое и левое окно, win - вспомогательное окно, будет хранить
@@ -22,12 +24,9 @@ int main()
 	WINDOW * left;
 	WINDOW * right;
 	WINDOW * win;
-	
 	//будет хранить количесто файлов + папок возвращаемых от scandir
 	int ln, rn;
-	//вспомогательная для ln и rn
-	int k;
-	
+
 	int y = 0; //для бегунка 
 	int cycle = 0; //для while
 	
@@ -42,7 +41,6 @@ int main()
 	noecho();
 	initscr();
 	
-	//signal(SIGWINCH, sig_winch);
 	cbreak();
 	curs_set(FALSE);
 	refresh();
@@ -86,10 +84,10 @@ int main()
 			case 's':
 			case KEY_DOWN:
 				if (win == left){
-					if (y < ln) y++;
+					if (y < --ln) y++;
 				}
 				if (win == right){
-					if (y < rn) y++;
+					if (y < --rn) y++;
 				}
 				break;
 					
@@ -100,7 +98,8 @@ int main()
 					chdir(rdir);
 					getcwd(rdir,255);
 				y = 0;
-				} else {
+				}
+				if (win == left){
 					strcpy(ldir,lnamelist[y] -> d_name);
 					chdir(ldir);
 					getcwd(ldir,255);
@@ -111,10 +110,12 @@ int main()
 				 
 			case 'l':
 				win = left;
+				wrefresh(win);
 				break;
 			
 			case 'r':
 				win = right;
+				wrefresh(win);
 				break;	
 				
 			case 'q':

@@ -1,0 +1,5 @@
+lib.o:
+	gcc -fPIC -c lib.c
+
+libpowers.so:
+gcc -shared lib.o -o libpowers.so
