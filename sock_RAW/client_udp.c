@@ -21,7 +21,7 @@ char msgbuf[buf_size];
 char receive[packet_size];
 //структура заголовка UDP
 
-//функция проверки адреса назначения порта с портом клиента.
+//функция сравнения назначения порта с портом клиента.
 int is_server_packet(struct sockaddr_in server, struct UdpHeader input);
 
 int main()
