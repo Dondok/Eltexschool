@@ -18,7 +18,7 @@
 
 
 
-struct sockaddr_in server,client;
+
 
 struct UdpHeader
 {

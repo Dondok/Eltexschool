@@ -10,6 +10,7 @@
 
 char mess_serv[] = "Hello client!";
 
+struct sockaddr_in server,client;
 
 int main()
 {
