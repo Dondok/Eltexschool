@@ -54,60 +54,60 @@ int main()
 		
 		
 	// Заполнение структуры, описывающей сервер
-    struct sockaddr_ll server;
-    memset(&server, 0, sizeof(struct sockaddr_ll));
-	server.sll_family 	= 	AF_PACKET;
-    server.sll_ifindex  = if_nametoindex("wlp3s0");
-    server.sll_halen	=	ETH_ALEN;
-	server.sll_protocol =	htons(ETH_P_ALL);
-    server.sll_addr[0] 	= MY_DEST_MAC0;
-    server.sll_addr[1] 	= MY_DEST_MAC1;
-    server.sll_addr[2] 	= MY_DEST_MAC2;
-    server.sll_addr[3] 	= MY_DEST_MAC3;
-    server.sll_addr[4] 	= MY_DEST_MAC4;
-    server.sll_addr[5] 	= MY_DEST_MAC5;
+	struct sockaddr_ll server;
+	memset(&server, 0, sizeof(struct sockaddr_ll));
+	server.sll_family   = AF_PACKET;
+	server.sll_ifindex  = if_nametoindex("wlp3s0");
+	server.sll_halen    = ETH_ALEN;
+	server.sll_protocol = htons(ETH_P_ALL);
+	server.sll_addr[0] 	= MY_DEST_MAC0;
+	server.sll_addr[1] 	= MY_DEST_MAC1;
+	server.sll_addr[2] 	= MY_DEST_MAC2;
+	server.sll_addr[3] 	= MY_DEST_MAC3;
+	server.sll_addr[4] 	= MY_DEST_MAC4;
+	server.sll_addr[5]  = MY_DEST_MAC5;
     
     
-    /*
-     * заполнение заголовка UDP
-     */		
-    struct udphdr h_udp;
-    memset(&h_udp, 0, sizeof(struct udphdr));				
-    h_udp.source = htons(port_client);
-    h_udp.dest = htons(port_server);
+	/*
+	* заполнение заголовка UDP
+	*/		
+	struct udphdr h_udp;
+	memset(&h_udp, 0, sizeof(struct udphdr));				
+	h_udp.source = htons(port_client);
+	h_udp.dest = htons(port_server);
 	h_udp.len = htons(h_udp_len + sizeof(msg1));
 	h_udp.check = 0;
     
     
-    /*
-	 * заполнение заголовка IP
-	 */
-    struct iphdr h_ip;
-    memset(&h_ip, 0, sizeof(struct iphdr));
+	/*
+	* заполнение заголовка IP
+	*/
+	struct iphdr h_ip;
+	memset(&h_ip, 0, sizeof(struct iphdr));
 	h_ip.version = 4;
-    h_ip.ihl = 5;
+	h_ip.ihl = 5;
 	h_ip.tos = 0;
-    h_ip.tot_len = htons(h_ip_len + h_udp_len + sizeof(msg1));
-    h_ip.id = htons(12345);
-    h_ip.frag_off = 0;
-    h_ip.ttl = 64; 
-    h_ip.protocol = IPPROTO_UDP; 
+	h_ip.tot_len = htons(h_ip_len + h_udp_len + sizeof(msg1));
+	h_ip.id = htons(12345);
+	h_ip.frag_off = 0;
+	h_ip.ttl = 64; 
+	h_ip.protocol = IPPROTO_UDP; 
 	h_ip.saddr = inet_addr("192.168.1.4");
 	h_ip.daddr = inet_addr("192.168.1.9");
 	h_ip.check = csum((unsigned short *) &h_ip, sizeof(struct iphdr)/2);
 
 
 	/*
-	 * заполнение заголовка канального уровня
-	 */
+	* заполнение заголовка канального уровня
+	*/
 	struct ethhdr h_eth;
-    memset(&h_eth, 0, sizeof(struct ethhdr));
+	memset(&h_eth, 0, sizeof(struct ethhdr));
 	h_eth.h_dest[0] = MY_DEST_MAC0;
 	h_eth.h_dest[1] = MY_DEST_MAC1;
 	h_eth.h_dest[2] = MY_DEST_MAC2;
-    h_eth.h_dest[3] = MY_DEST_MAC3;
-    h_eth.h_dest[4] = MY_DEST_MAC4;
-    h_eth.h_dest[5] = MY_DEST_MAC5;
+	h_eth.h_dest[3] = MY_DEST_MAC3;
+	h_eth.h_dest[4] = MY_DEST_MAC4;
+	h_eth.h_dest[5] = MY_DEST_MAC5;
 	h_eth.h_source[0] = MY_SOURCE_MAC0;
 	h_eth.h_source[1] = MY_SOURCE_MAC1;
 	h_eth.h_source[2] = MY_SOURCE_MAC2;
@@ -117,24 +117,23 @@ int main()
 	h_eth.h_proto	 = htons(ETH_P_IP);
   
 	//заполнение буфера с заголовками для отправки.
-    memcpy(msgbuf, &h_eth, h_eth_len);
+	memcpy(msgbuf, &h_eth, h_eth_len);
 	memcpy((void *)(msgbuf + h_eth_len), &h_ip, h_ip_len);
 	memcpy((void *)(msgbuf + h_eth_len + h_ip_len),	&h_udp, h_udp_len);
 	memcpy((void *)(msgbuf + h_all_p_len), &msg1, sizeof(msg1));
 	
 	/*
-	 * отправление сформированного пакета серверу
-	 */
+	* отправление сформированного пакета серверу
+	*/
 	if ((sendto(sock_raw, &msgbuf, sizeof(msgbuf), 0, 
-				(struct sockaddr *)&server,	len) == -1)){
-			perror("sendto ERR");
-			exit (1);		
-		}
+			(struct sockaddr *)&server,	len) == -1)){
+		perror("sendto ERR");
+		exit (1);		
+	}
 	
 	struct udphdr *recv_packet;
-	while(1) {
-		
-		 memset(packet, 0, packet_size);
+	while(1) {	
+		memset(packet, 0, packet_size);
 		
 		if((bytes_read = recvfrom(sock_raw, packet, 2*sizeof(packet), 0,
 			(struct sockaddr *)&server, &len)) > 0){
@@ -149,9 +148,7 @@ int main()
 		}
 	}
 	
-	
 	close(sock_raw);
-		
 	return 0;
 }
 
@@ -166,11 +163,12 @@ int is_server_packet(struct udphdr input){
 
 unsigned short csum(unsigned short *buf, int nwords)
 {
-    unsigned long sum;
-    for(sum=0; nwords>0; nwords--)
-        sum += *buf++;
-    sum = (sum >> 16) + (sum &0xffff);
-    sum += (sum >> 16);
-    return (unsigned short)(~sum);
+	unsigned long sum;
+	for(sum=0; nwords>0; nwords--){
+		sum += *buf++;
+	}
+	sum = (sum >> 16) + (sum &0xffff);
+	sum += (sum >> 16);
+	return (unsigned short)(~sum);
 }
 

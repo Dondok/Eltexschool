@@ -30,41 +30,36 @@ int main()
 	
 	//заполнение структуры сервера
 	memset(&server, 0, sizeof(struct sockaddr_in));
-    server.sin_family = AF_INET;
+	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = inet_addr("192.168.1.9");
-    server.sin_port = htons(port_server);
+	server.sin_port = htons(port_server);
     
 	//bind - для явного связывание с некоторым адресом
 	if (bind(sock, (struct sockaddr *)&server, len) < 0) {
-        perror("bind");
-        exit(2);
-    }
+		perror("bind");
+		exit(2);
+	}
     	
-    /*
-     * принимает данные от клиента.
-     * добавляет строку к принятому сообщению и отправляет
-     * обратно клиенту.
-     */
-	while(1) {
-		
+	/*
+	* принимает данные от клиента.
+	* добавляет строку к принятому сообщению и отправляет
+	* обратно клиенту.
+	*/
+	while(1) {	
 		if((bytes_read = recvfrom(sock, buf, 1024, 0,
-			(struct sockaddr *)&client, &len)) > 0){
-				
-			printf("%s\n",buf);
-			
+			(struct sockaddr *)&client, &len)) > 0){	
+			printf("%s\n",buf);	
 		}
 		
 		strcat(buf, mess_serv);
 		printf("%s\n",buf);
-			
+		
 		if ((sendto(sock, buf, sizeof(buf),0,
-		(struct sockaddr *)&client, len)) == -1){
+			(struct sockaddr *)&client, len)) == -1){
 			perror("sendto()");
 		}
 		bytes_read = -1;
-		
 	}
-		
-
+	
 	return 0;
 }
